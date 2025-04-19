@@ -89,10 +89,14 @@ bot.on('message', async (msg) => {
         bot.sendMessage(chatId, "🖼️ To‘lov chekingizni yuboring:");
     }
 
-    if (msg.photo && userSessions[chatId]?.pubgId && userSessions[chatId]?.phoneNumber) {
-        const photoId = msg.photo[msg.photo.length - 1].file_id;
-        const session = userSessions[chatId];
+    if (msg.photo && userSessions[chatId]?.pubgId && userSessions[chatId]?.phoneNumber && !userSessions[chatId]?.paymentReceipt) {
+        // Foydalanuvchidan chek rasmni olish
+        userSessions[chatId].paymentReceipt = msg.photo[msg.photo.length - 1].file_id;
+        bot.sendMessage(chatId, "✅ Chek tasdiqlandi. Buyurtma ma'lumotlarini yuborish uchun kuting...");
+    }
 
+    if (userSessions[chatId]?.pubgId && userSessions[chatId]?.phoneNumber && userSessions[chatId]?.paymentReceipt) {
+        const session = userSessions[chatId];
         const userName = msg.from.username || 'No Username';
 
         const userData = {
@@ -104,12 +108,10 @@ bot.on('message', async (msg) => {
             ucPrice: session.price
         };
 
-        // Foydalanuvchidan cheque rasmni olish va adminlarga yuborish
         const caption = `🛒 Yangi buyurtma:\n\n👤 Foydalanuvchi: ${userData.userName}\n🎮 PUBG ID: ${userData.pubgId}\n📱 Telefon raqami: ${userData.phoneNumber}\n💰 UC miqdori: ${userData.ucAmount} UC\n💵 Narxi: ${userData.ucPrice} so'm`;
 
-        await bot.sendPhoto(targetGroupId, photoId, { caption });
-
-        // Adminlar guruhiga ma'lumotlarni yuborish
+        // Chekni va foydalanuvchi ma'lumotlarini yuborish
+        await bot.sendPhoto(targetGroupId, session.paymentReceipt, { caption });
         bot.sendMessage(targetGroupId, `🛒 Yangi buyurtma:\n\n👤 Foydalanuvchi: ${userData.userName}\n🎮 PUBG ID: ${userData.pubgId}\n📱 Telefon raqami: ${userData.phoneNumber}\n💰 UC miqdori: ${userData.ucAmount} UC\n💵 Narxi: ${userData.ucPrice} so'm`);
 
         bot.sendMessage(chatId, "✅ Buyurtma qabul qilindi. Tez orada UC qo‘shiladi.");
