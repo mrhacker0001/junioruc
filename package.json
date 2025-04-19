@@ -1,0 +1,14 @@
+{
+  "name": "junior-uc-bot",
+  "version": "1.0.0",
+  "main": "junioruc.js",
+  "scripts": {
+    "start": "node junioruc.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "firebase-admin": "^13.2.0",
+    "mongoose": "^8.13.2",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
